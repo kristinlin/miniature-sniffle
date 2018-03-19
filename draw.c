@@ -61,7 +61,10 @@ void add_sphere( struct matrix * edges,
                  double cx, double cy, double cz,
                  double r, int step ) {
   struct matrix * sphere = generate_sphere( cx, cy, cz, r, step );
-  //add the points in sphere to edges
+  int c;
+  for (c = 0; c < sphere->lastcol; c++) {
+    add_point(edges, sphere->m[0][c], sphere->m[1][c], sphere->m[2][c]);
+  }
   return;
 }
 
@@ -80,10 +83,24 @@ void add_sphere( struct matrix * edges,
 struct matrix * generate_sphere(double cx, double cy, double cz,
                                 double r, int step ) {
   struct matrix * sphere = new_matrix(3, 1);
-  //for t
-  //add circle; rotate
-  //this makes your first circle rotate
-  return NULL;
+  double phi, theta, sub_phi, sub_theta, x, y, z;
+  double last[3] = [r+cx, cy, cz];
+  sphere->lastcol = 1;
+  //for ever rot
+  for (phi = 0; phi < M_PI*2000 ; phi += step ) {
+    //draw semicircle
+    for (theta = phi; theta < M_PI*1000; theta+= step) {
+      sub_phi = phi/2000;
+      sub_theta = theta/1000;
+      x = r*cos(sub_theta) + cx;
+      y = r*sin(sub_theta)cos(sub_phi) + cy;
+      z = r*sin(sub_theta)sin(sub_phi) + cz;
+      add_edge(sphere, last[0], last[1], last[2], x, y, z);
+      last[0] = x;
+      last[1] = y;
+      last[2] = z;
+    }
+  return sphere;
 }
 
 /*======== void add_torus() ==========
@@ -107,6 +124,10 @@ void add_torus( struct matrix * edges,
                 double r1, double r2, int step ) {
   struct matrix * torus = generate_torus( cx, cy, cz, r, step );
   //add points in generate_torus to edges
+  int c;
+  for (c = 0; c < torus->lastcol; c++) {
+    add_point(edges, torus->m[0][c], torus->m[1][c], torus->m[2][c]);
+  }
   return;
 }
 
@@ -125,10 +146,23 @@ void add_torus( struct matrix * edges,
 struct matrix * generate_torus( double cx, double cy, double cz,
                                 double r1, double r2, int step ) {
   struct matrix * torus = new_matrix(3, 1);
-  //draw initial circle; translate -- save these points
-  //for t
-  //draw those points; rotate
-  return NULL;
+  double phi, theta, sub_phi, sub_theta, x, y, z;
+  double last[3] = [r1+r2, 0, 0];
+  torus->lastcol = 1;
+  for (phi = 0; phi < M_PI*2000 ; phi += step ) {
+    for (theta = phi; theta < M_PI*2000; theta+= step) {
+      sub_theta = theta/2000;
+      sub_phi = phi/2000;
+      x = r1*cos(sub_theta) + r2;
+      y = r1*sin(sub_theta);
+      z = sub_phi;
+      add_edge(torus, last[0], last[1], last[2], x, y, z);
+      last[0] = x;
+      last[1] = y;
+      last[2] = z;
+    }
+  }
+  return torus;
 }
 
 /*======== void add_circle() ==========
