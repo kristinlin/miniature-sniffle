@@ -91,13 +91,25 @@ void parse_file ( char * filename,
     double yvals[4];
     double zvals[4];
     struct matrix *tmp;
-    double r;
+    double r, r1;
     double theta;
     char axis;
     int type;
     int step = 100;
 
-    if ( strncmp(line, "circle", strlen(line)) == 0 ) {
+    if ( strncmp(line, "sphere", strlen(line)) == 0 ) {
+      fgets(line, sizeof(line), f);
+      sscanf(line, "%lf %lf %lf %lf",
+	     xvals, yvals, zvals, &r);
+      add_sphere( edges, xvals[0], yvals[0], zvals[0], r, 1 );
+    }
+    else if ( strncmp(line, "torus", strlen(line)) == 0 ) {
+      fgets(line, sizeof(line), f);
+      sscanf(line, "%lf %lf %lf %lf %lf",
+	     xvals, yvals, zvals, &r, &r1);
+      add_torus( edges, xvals[0], yvals[0], zvals[0], r, r1, 1 );
+    }
+    else if ( strncmp(line, "circle", strlen(line)) == 0 ) {
       fgets(line, sizeof(line), f);
       //printf("CIRCLE\t%s", line);
 
