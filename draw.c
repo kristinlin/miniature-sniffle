@@ -26,20 +26,20 @@ void add_box( struct matrix * edges,
               double x, double y, double z,
               double width, double height, double depth ) {
   //front face
-  add_edge(edges, x, y, z, x, y+height, z);
-  add_edge(edges, x, y+height, z, x+width, y+height, z);
-  add_edge(edges, x+width, y+height, z, x+width, y, z);
+  add_edge(edges, x, y, z, x, y-height, z);
+  add_edge(edges, x, y-height, z, x+width, y-height, z);
+  add_edge(edges, x+width, y-height, z, x+width, y, z);
   add_edge(edges, x+width, y, z, x, y, z);
   //back face
-  add_edge(edges, x, y, z+depth, x, y+height, z+depth);
-  add_edge(edges, x, y+height, z+depth, x+width, y+height, z+depth);
-  add_edge(edges, x+width, y+height, z+depth, x+width, y, z+depth);
-  add_edge(edges, x+width, y, z+depth, x, y, z+depth);
+  add_edge(edges, x, y, z-depth, x, y-height, z-depth);
+  add_edge(edges, x, y-height, z-depth, x+width, y-height, z-depth);
+  add_edge(edges, x+width, y-height, z-depth, x+width, y, z-depth);
+  add_edge(edges, x+width, y, z-depth, x, y, z-depth);
   //connect the two
-  add_edge(edges, x, y, z+depth, x, y, z);
-  add_edge(edges, x, y+height, z+depth, x, y+height, z);
-  add_edge(edges, x+width, y+height, z+depth, x+width, y+height, z);
-  add_edge(edges, x+width, y, z+depth, x+width, y, z);
+  add_edge(edges, x, y, z-depth, x, y, z);
+  add_edge(edges, x, y-height, z-depth, x, y-height, z);
+  add_edge(edges, x+width, y-height, z-depth, x+width, y-height, z);
+  add_edge(edges, x+width, y, z-depth, x+width, y, z);
 }
 
 /*======== void add_sphere() ==========
@@ -61,11 +61,8 @@ void add_sphere( struct matrix * edges,
                  double cx, double cy, double cz,
                  double r, int step ) {
   struct matrix * sphere = generate_sphere( cx, cy, cz, r, step );
-  //  print_matrix(sphere);
   int c;
   for (c = 0; c < sphere->lastcol; c++) {
-    printf("%lf\n", sphere->m[1][c]);
-    printf("Was it here?\n");
     add_point(edges, sphere->m[0][c], sphere->m[1][c], sphere->m[2][c]);
   }
   free(sphere);
@@ -87,25 +84,18 @@ void add_sphere( struct matrix * edges,
 struct matrix * generate_sphere(double cx, double cy, double cz,
                                 double r, int step ) {
   struct matrix * sphere = new_matrix(4, 1);
-  double phi, theta, sub_phi, sub_theta, x, y, z;
-  double last[3];
-  last[0] = r+cx;
-  last[1] = cy;
-  last[2] = cz;
-  sphere->lastcol = 1;
+  int i, g;
+  double t1, t2, x, y, z;
   //for ever rot
-  for (phi = 0; phi < M_PI*200 ; phi += step ) {
+  for (g = 1; g <= step ; g += 1 ) {
     //draw semicircle
-    for (theta = phi; theta < M_PI*100; theta+= step) {
-      sub_phi = phi/200;
-      sub_theta = theta/100;
-      x = r*cos(sub_theta) + cx;
-      y = r*sin(sub_theta)*cos(sub_phi) + cy;
-      z = r*sin(sub_theta)*sin(sub_phi) + cz;
-      add_edge(sphere, last[0], last[1], last[2], x, y, z);
-      last[0] = x;
-      last[1] = y;
-      last[2] = z;
+    t1 = (double)g/step;
+    for (i = 1; i <= step; i += 1) {
+      t2 = (double)i/step;
+      x = r*cos(t2 * 2 * M_PI) + cx;
+      y = r*sin(t2 * 2 * M_PI)*cos(t1 * M_PI) + cy;
+      z = r*sin(t2 * 2 * M_PI)*sin(t1 * M_PI) + cz;
+      add_edge( sphere, x, y, z, x, y, z );
     }
   }
   return sphere;
@@ -146,7 +136,7 @@ void add_torus( struct matrix * edges,
 	    double cy
 	    double cz
 	    double r
-	    double step  
+	    double stenp  
   Returns: Generates all the points along the surface 
            of a torus with center (cx, cy, cz) and
 	   radii r1 and r2.
@@ -155,23 +145,16 @@ void add_torus( struct matrix * edges,
 struct matrix * generate_torus( double cx, double cy, double cz,
                                 double r1, double r2, int step ) {
   struct matrix * torus = new_matrix(4, 1);
-  double phi, theta, sub_phi, sub_theta, x, y, z;
-  double last[3];
-  last[0] = r1+r2;
-  last[1] = 0;
-  last[2] = 0;
-  torus->lastcol = 1;
-  for (phi = 0; phi < M_PI*200 ; phi += step ) {
-    for (theta = phi; theta < M_PI*200; theta+= step) {
-      sub_theta = theta/200;
-      sub_phi = phi/200;
-      x = r1*cos(sub_theta) + r2;
-      y = r1*sin(sub_theta);
-      z = sub_phi;
-      add_edge(torus, last[0], last[1], last[2], x, y, z);
-      last[0] = x;
-      last[1] = y;
-      last[2] = z;
+  double t1, t2, x, y, z;
+  int i, g;
+  for (i = 0; i < step ; i ++ ) {
+    t1 = (double)i/step * M_PI * 2;
+    for (g = 0; g < step; g++) {
+      t2 = (double)g/step * M_PI * 2;
+      x = cos(t1) * (r1*cos(t2) + r2) + cx;
+      y = r1*sin(t2) + cy;
+      z = sin(t1) * (r1*cos(t2) + r2) + cz ;
+      add_edge( torus, x, y, z, x, y, z );
     }
   }
   return torus;
@@ -271,16 +254,16 @@ adds point (x, y, z) to points and increment points.lastcol
 if points is full, should call grow on points
 ====================*/
 void add_point( struct matrix * points, double x, double y, double z) {
-  print_matrix(points);
+  //  print_matrix(points);
   if ( points->lastcol == points->cols )
     grow_matrix( points, points->lastcol + 100 );
-  printf("Did someting happen\n");
+  //  printf("Did someting happen--add_point\n");
   points->m[0][ points->lastcol ] = x;
   points->m[1][ points->lastcol ] = y;
   points->m[2][ points->lastcol ] = z;
-  printf("%d\n", points->lastcol);
-  printf("%lf\n", points->m[3][points->lastcol]);
-  printf("What?\n");
+  //  printf("%d\n", points->lastcol);
+  //  printf("%lf\n", points->m[3][points->lastcol]);
+  //  printf("What?\n");
   points->m[3][ points->lastcol ] = 1;
   points->lastcol++;
 

@@ -107,13 +107,14 @@ void parse_file ( char * filename,
       fgets(line, sizeof(line), f);
       sscanf(line, "%lf %lf %lf %lf",
 	     xvals, yvals, zvals, &r);
-      add_sphere( edges, xvals[0], yvals[0], zvals[0], r, 1 );
+      printf("This is edges %d\n", edges->lastcol);
+      add_sphere( edges, xvals[0], yvals[0], zvals[0], r, step );
     }
     else if ( strncmp(line, "torus", strlen(line)) == 0 ) {
       fgets(line, sizeof(line), f);
       sscanf(line, "%lf %lf %lf %lf %lf",
 	     xvals, yvals, zvals, &r, &r1);
-      add_torus( edges, xvals[0], yvals[0], zvals[0], r, r1, 1 );
+      add_torus( edges, xvals[0], yvals[0], zvals[0], r, r1, step );
     }
     else if ( strncmp(line, "circle", strlen(line)) == 0 ) {
       fgets(line, sizeof(line), f);
@@ -213,8 +214,7 @@ void parse_file ( char * filename,
     }//end apply
     else if ( strncmp(line, "clear", strlen(line)) == 0 ) {
       free( edges );
-      edges = new_matrix(3, 1);
-      edges->lastcol = 1;
+      edges = new_matrix(4, 1);
     }
     else if ( strncmp(line, "display", strlen(line)) == 0 ) {
       printf("DISPLAY\t%s", line);

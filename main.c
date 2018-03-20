@@ -16,9 +16,8 @@ int main(int argc, char **argv) {
   struct matrix * transform;
 
   edges = new_matrix(4, 4);
-  edges->lastcol = 4;
   transform = new_matrix(4, 4);
-  transform->lastcol = 4;
+
   /* print_matrix( make_bezier() ); */
   /* printf("\n"); */
   /* print_matrix( make_hermite() ); */
