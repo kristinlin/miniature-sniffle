@@ -107,7 +107,7 @@ void parse_file ( char * filename,
       fgets(line, sizeof(line), f);
       sscanf(line, "%lf %lf %lf %lf",
 	     xvals, yvals, zvals, &r);
-      printf("This is edges %d\n", edges->lastcol);
+      //      printf("This is edges %d\n", edges->lastcol);
       add_sphere( edges, xvals[0], yvals[0], zvals[0], r, step );
     }
     else if ( strncmp(line, "torus", strlen(line)) == 0 ) {
@@ -118,7 +118,7 @@ void parse_file ( char * filename,
     }
     else if ( strncmp(line, "circle", strlen(line)) == 0 ) {
       fgets(line, sizeof(line), f);
-      printf("CIRCLE\t%s", line);
+      //      printf("CIRCLE\t%s", line);
 
       sscanf(line, "%lf %lf %lf %lf",
 	     xvals, yvals, zvals, &r);
@@ -133,7 +133,7 @@ void parse_file ( char * filename,
         type = BEZIER;
 
       fgets(line, sizeof(line), f);
-      printf("CURVE\t%s", line);
+      //      printf("CURVE\t%s", line);
 
       sscanf(line, "%lf %lf %lf %lf %lf %lf %lf %lf",
 	     xvals, yvals, xvals+1, yvals+1,
@@ -151,7 +151,7 @@ void parse_file ( char * filename,
     
     else if ( strncmp(line, "line", strlen(line)) == 0 ) {
       fgets(line, sizeof(line), f);
-      printf("LINE\t%s", line);
+      //      printf("LINE\t%s", line);
 
       sscanf(line, "%lf %lf %lf %lf %lf %lf",
 	     xvals, yvals, zvals,
@@ -165,7 +165,7 @@ void parse_file ( char * filename,
 
     else if ( strncmp(line, "scale", strlen(line)) == 0 ) {
       fgets(line, sizeof(line), f);
-      printf("SCALE\t%s", line);
+      //      printf("SCALE\t%s", line);
       sscanf(line, "%lf %lf %lf",
 	     xvals, yvals, zvals);
       /* printf("%lf %lf %lf\n", */
@@ -176,7 +176,7 @@ void parse_file ( char * filename,
 
     else if ( strncmp(line, "move", strlen(line)) == 0 ) {
       fgets(line, sizeof(line), f);
-      printf("MOVE\t%s", line);
+      //      printf("MOVE\t%s", line);
       sscanf(line, "%lf %lf %lf",
 	     xvals, yvals, zvals);
       /* printf("%lf %lf %lf\n", */
@@ -187,7 +187,7 @@ void parse_file ( char * filename,
 
     else if ( strncmp(line, "rotate", strlen(line)) == 0 ) {
       fgets(line, sizeof(line), f);
-      printf("Rotate\t%s", line);
+      //      printf("Rotate\t%s", line);
       sscanf(line, "%c %lf",
 	     &axis, &theta);      
       /* printf("%c %lf\n", */
@@ -204,12 +204,12 @@ void parse_file ( char * filename,
     }//end rotate
 
     else if ( strncmp(line, "ident", strlen(line)) == 0 ) {
-      printf("IDENT\t%s", line);
+      //      printf("IDENT\t%s", line);
       ident(transform);
     }//end ident
     
     else if ( strncmp(line, "apply", strlen(line)) == 0 ) {
-      printf("APPLY\t%s", line);
+      //      printf("APPLY\t%s", line);
       matrix_mult(transform, edges);
     }//end apply
     else if ( strncmp(line, "clear", strlen(line)) == 0 ) {
@@ -217,7 +217,7 @@ void parse_file ( char * filename,
       edges = new_matrix(4, 1);
     }
     else if ( strncmp(line, "display", strlen(line)) == 0 ) {
-      printf("DISPLAY\t%s", line);
+      //      printf("DISPLAY\t%s", line);
       clear_screen(s);
       draw_lines(edges, s, c);
       display( s );
